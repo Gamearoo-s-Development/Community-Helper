@@ -10,13 +10,16 @@ export async function loadEvents(client) {
 	await client.events.clear();
 
 	try {
+		// Load Event Files
 		const eventFiles = await loadFiles("events");
 		const resolvedFiles = await Promise.all(eventFiles.map(file => file));
 
+		// Load Event Data
 		resolvedFiles.forEach((file) => {
 			const execute = (...args) => file.data.execute(...args, client);
 			client.events.set(file.data.name || file.name, execute);
 
+			// Load Events (on, custom)
 			if (file.data.custom) execute(client);
 			else {
 				if (file.data.once) client.on(file.data.name, execute);
