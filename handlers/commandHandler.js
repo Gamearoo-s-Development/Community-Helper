@@ -9,19 +9,17 @@ import {loadFiles, ms} from "./functions.js";
 */
 export async function loadCommands(client) {
 	try {
-
+		// Load Command Files
 		const unresolvedFiles = await loadFiles("commands");
 		const slashCommands = unresolvedFiles.map((command) => command);
 
-
+		// Load Command cooldown, set client.slashCommands
 		await slashCommands.forEach(file => {
 			file.data.cooldown = file.data.cooldown ? ms(file.data.cooldown) : null;
-			[client.slashCommands].forEach(target => {
-				target.set(file.name, file.data);
-			});
+			client.slashCommands.set(file.name, file.data);
 		});
 
-
+		// Load Command Data
 		const globalCommands = client.slashCommands.map((file, name) => ({
 			defaultMemberPermissions: file["defaultMemberPermissions"],
 			description: file["description"],
@@ -30,12 +28,15 @@ export async function loadCommands(client) {
 			name: name
 		}));
 
+		// Actually set the commands in Discord
 		await client.application.commands.set(globalCommands);
 		console.log(bold(green("[ TODO ] ▪ ")) + whiteBright("Loaded Commands"));
+
+		// Initialize Interaction Handling
 		await onInteraction(client);
 	} catch (error) {
 		console.log(bold(red("[ ERR ] ▪ ")) + whiteBright("Loading Commands: ") + red(error));
-		console.log(error)
+		console.log(error);
 	}
 }
 
@@ -54,7 +55,7 @@ async function onInteraction(client) {
 
 		if (!command) return;
 
-
+		// Handle cooldown
 		if (command.cooldown) {
 			const userId = interaction.user.id;
 			const cooldownExpiration = client.cooldowns.get(userId) || 0;
@@ -84,15 +85,16 @@ async function onInteraction(client) {
 			values.options.map(option => {
 				args.push({name: option.name, type: option.type, value: option.value});
 			});
-		})
+		});
 
 		const {channel, guild, member, user} = interaction;
 
+		// Execute command, catch errors
 		try {
 			await command.execute({args, channel, client, guild, interaction, member, user});
 		} catch (error) {
-			console.warn(bold(red("[ ERR ] ▪ ")) + whiteBright(`Error Executing "${commandName}": `) + red(error));
-			console.warn(error)
+			console.warn(bold(red("[ ERR ] ▪ ")) + whiteBright(`Error Executing "${commandName}": `));
+			console.warn(red(error));
 
 			await interaction.reply({
 				embeds: [{

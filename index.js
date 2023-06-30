@@ -1,3 +1,5 @@
+// IMPORTS
+
 import "dotenv/config";
 
 import {MongoClient} from "mongodb";
@@ -11,6 +13,8 @@ import {Client, Collection, IntentsBitField, Partials} from "discord.js";
 import ram_api from "ram-api.js";
 import {loadEvents} from "./handlers/eventHandler.js";
 
+
+// Discord.JS Client (exported for easy access)
 export let client = new Client({
 	intents: [
 		IntentsBitField.Flags["Guilds"],
@@ -31,6 +35,7 @@ export let client = new Client({
 const ram_api_client = new ram_api.RamApiPro(process.env["RAM_API"], "v13");
 
 
+// MongoDB Setup
 MongoClient.connect(process.env["MONGO"]).then((dbClient) => {
 	client.mongo = dbClient.db("todoSystem");
 	console.log(
@@ -56,7 +61,7 @@ MongoClient.connect(process.env["MONGO"]).then((dbClient) => {
 	});
 
 
-	// Closes the Database Connection on ALT + F4
+	// Closes the Database & Discord Connection on close.
 	process.on("SIGINT", () => {
 		dbClient.close().then(() => {
 			console.log(
@@ -73,7 +78,6 @@ MongoClient.connect(process.env["MONGO"]).then((dbClient) => {
 			process.exit(0);
 		});
 	});
-
 }).catch((err) => {
 	console.error(
 		bold(red("[ MONGODB ERROR ] ▪ ")) +
