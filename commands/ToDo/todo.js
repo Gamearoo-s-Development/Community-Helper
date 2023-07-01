@@ -37,7 +37,6 @@ export default {
 
 	execute: async function ({args, interaction}) {
 		const settings = await dbFindOne("settings", {guildId: interaction.guild.id}).then(result => result || null);
-		const threadChannel = interaction.guild.channels.cache.get(settings[args[1]?.value]);
 		let taskQuery = null, message = null;
 
 		if (args[0]?.value) {
@@ -109,6 +108,7 @@ export default {
 			if (!taskQuery) return interaction.reply(errorEmbed("Invalid task ID."));
 			if (!settings?.thread_todo || !settings?.thread_progress || !settings?.thread_complete) return interaction.reply(errorEmbed("Please set all threads with `/todo settings`."));
 			if (taskQuery.category === args[1].value) return interaction.reply(errorEmbed("Task is already in that category."));
+			const threadChannel = interaction.guild.channels.cache.get(settings[args[1]?.value]);
 
 			if (!message) {
 				await dbDeleteOne("tasks", {guildId: interaction.guild.id, taskId: args[0].value});
