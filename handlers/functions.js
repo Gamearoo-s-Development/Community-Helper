@@ -1,3 +1,41 @@
+// Subcommand class, makes it cleaner to create subcommands
+export class SubCommand {
+	constructor(name, description, options = []) {
+		this.type = 1;
+		this.name = name;
+		this.description = description;
+		this.options = options;
+	}
+}
+
+// Command Option
+export class Option {
+	constructor(name, description, type, required = false, autocomplete = false, choices = [], {channel_types = []} = {}) {
+		this.name = name;
+		this.description = description;
+		this.type = type;
+		this.required = required;
+		this.choices = choices;
+		this.autocomplete = autocomplete;
+		this.channel_types = channel_types;
+	}
+}
+
+/**
+ * Create an error embed with ease
+ * @param description
+ * @returns {{ephemeral: boolean, embeds: [{color: number, description, title: string}]}}
+ */
+export function errorEmbed(description) {
+	return {
+		embeds: [{
+			title: "Oops!",
+			description: description,
+			color: 0xFF0000
+		}], ephemeral: true
+	};
+}
+
 /*
 * Loads all files in a directory
 * @param {string} dirName - The directory to load files from
@@ -35,8 +73,7 @@ export async function loadFiles(dirName) {
 */
 export function ms(value, short = false) {
 	const s = 1000, m = s * 60,
-		h = m * 60, d = h * 24,
-		w = d * 7, y = d * 365.25;
+		h = m * 60, d = h * 24;
 
 	function parse(str) {
 		str = String(str);
@@ -48,19 +85,29 @@ export function ms(value, short = false) {
 		const n = parseFloat(match[1]);
 		const type = (match[2] || "ms").toLowerCase();
 		switch (type) {
-		case "years" || "year" || "yrs" || "yr" || "y":
-			return n * y;
-		case "weeks" || "week" || "w":
-			return n * w;
-		case "days" || "day" || "d":
-			return n * d;
-		case "hours" || "hour" || "hrs" || "hr" || "h":
+		case "hours":
+		case "hour":
+		case "hrs":
+		case "hr":
+		case "h":
 			return n * h;
-		case "minutes" || "minute" || "mins" || "min" || "m":
+		case "minutes":
+		case "minute":
+		case "mins":
+		case "min":
+		case "m":
 			return n * m;
-		case "seconds" || "second" || "secs" || "sec" || "s":
+		case "seconds":
+		case "second":
+		case "secs":
+		case "sec":
+		case "s":
 			return n * s;
-		case "milliseconds" || "millisecond" || "msecs" || "msec" || "ms":
+		case "milliseconds":
+		case "millisecond":
+		case "msecs":
+		case "msec":
+		case "ms":
 			return n;
 		default:
 			return undefined;

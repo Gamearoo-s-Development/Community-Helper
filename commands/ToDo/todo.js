@@ -1,26 +1,6 @@
 import {dbDeleteOne, dbFindOne, dbInsertOne, dbUpdateOne} from "../../handlers/mongo.js";
+import {errorEmbed, Option, SubCommand} from "../../handlers/functions.js";
 import {PermissionFlagsBits} from "discord.js";
-
-class SubCommand {
-	constructor(name, description, options = []) {
-		this.type = 1;
-		this.name = name;
-		this.description = description;
-		this.options = options;
-	}
-}
-
-class Option {
-	constructor(name, description, type, required = false, autocomplete = false, choices = [], {channel_types = []} = {}) {
-		this.name = name;
-		this.description = description;
-		this.type = type;
-		this.required = required;
-		this.choices = choices;
-		this.autocomplete = autocomplete;
-		this.channel_types = channel_types;
-	}
-}
 
 export default {
 	category: "ToDo",
@@ -51,12 +31,15 @@ export default {
 			new Option("thread_todo", "What is the todo thread?", 7, false, false, [], {channel_types: [11]}),
 			new Option("thread_progress", "What is the progress thread?", 7, false, false, [], {channel_types: [11]}),
 			new Option("thread_complete", "What is the complete thread?", 7, false, false, [], {channel_types: [11]}),
+			new Option("channel_suggest", "What is the suggestion channel?", 7, false, false, [], {channel_types: [0]}),
 		])
 	],
 
 	execute: async function ({args, interaction}) {
 		const settings = await dbFindOne("settings", {guildId: interaction.guild.id}).then(result => result || null);
+		const threadChannel = interaction.guild.channels.cache.get(settings[args[1]?.value]);
 		let taskQuery = null, message = null;
+
 		if (args[0]?.value) {
 			taskQuery = await dbFindOne("tasks", {
 				guildId: interaction.guild.id, taskId: args[0].value
@@ -88,7 +71,7 @@ export default {
 				interaction.reply({content: `Created task with ID: ${newId}`, ephemeral: true});
 			}).catch(error => {
 				console.warn(error);
-				interaction.reply(errorEmbed(`There was an issue sending the message, make sure the thread still exists.`));
+				interaction.reply(errorEmbed("There was an issue sending the message, make sure the thread still exists."));
 			});
 			break;
 
@@ -134,7 +117,6 @@ export default {
 
 			await message.delete();
 
-			const threadChannel = interaction.guild.channels.cache.get(settings[args[1].value]);
 			if (!threadChannel) return interaction.reply(errorEmbed("Category thread doesn't exist, please reset it with `/todo settings`."));
 
 			const newColor = args[1].value === "thread_todo" ? 0xFF0000 : args[1].value === "thread_progress" ? 0xFFFF00 : 0x00FF00;
@@ -152,7 +134,7 @@ export default {
 				return interaction.reply({content: `Moved task with ID: ${args[0].value}`, ephemeral: true});
 			}).catch(error => {
 				console.warn(error);
-				return interaction.reply(errorEmbed(`There was an issue sending the message, make sure the thread still exists.`));
+				return interaction.reply(errorEmbed("There was an issue sending the message, make sure the thread still exists."));
 			});
 
 		case "settings":
@@ -171,6 +153,10 @@ export default {
 						{
 							name: "Completed Thread",
 							value: settings?.thread_complete || "Not Set"
+						},
+						{
+							name: "Suggestion Channel",
+							value: settings?.channel_suggest || "Not Set"
 						}
 					]
 				}], ephemeral: true
@@ -191,13 +177,3 @@ export default {
 		}
 	}
 };
-
-function errorEmbed(description) {
-	return {
-		embeds: [{
-			title: "Oops!",
-			description: description,
-			color: 0xFF0000
-		}], ephemeral: true
-	};
-}

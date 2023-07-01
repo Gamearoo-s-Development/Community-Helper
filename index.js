@@ -32,7 +32,7 @@ export let client = new Client({
 
 
 // Ram API Setup
-const ram_api_client = new ram_api.RamApiPro(process.env["RAM_API"], "v13");
+client.ram_api = new ram_api.RamApiPro(process.env["RAM_API"], "v13");
 
 
 // MongoDB Setup
@@ -52,7 +52,7 @@ MongoClient.connect(process.env["MONGO"]).then((dbClient) => {
 		await loadEvents(client);
 
 		// RAM API Version Check
-		setInterval(() => ram_api_client.version_checkAsync(), 3600000); // 1 Hour
+		setInterval(() => client.ram_api.version_checkAsync(), 3600000); // 1 Hour
 
 		console.log(
 			bold(green("[ TODO ] ▪ ")) +

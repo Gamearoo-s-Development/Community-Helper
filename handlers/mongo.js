@@ -42,7 +42,7 @@ export function dbFindMany(collectionName, query) {
  */
 export function dbFindOne(collectionName, query) {
 	const collection = client.mongo.collection(collectionName);
-	return collection.findOne(query)
+	return collection.findOne(query);
 }
 
 /**

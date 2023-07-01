@@ -1,6 +1,6 @@
 {
   "name": "to-do-bot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Gamearoo-s-Development/to-do-bot.git"
+    "url": "git+https://github.com/Gamearoo-s-Development/Community-Helper.git"
   },
   "author": "Abadima",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Gamearoo-s-Development/to-do-bot/issues"
+    "url": "https://github.com/Gamearoo-s-Development/Community-Helper/issues"
   },
-  "homepage": "https://github.com/Gamearoo-s-Development/to-do-bot#readme",
+  "homepage": "https://github.com/Gamearoo-s-Development/Community-Helper#readme",
   "dependencies": {
     "colorette": "^2.0.20",
     "discord.js": "^14.11.0",
@@ -25,6 +25,6 @@
     "ram-api.js": "^13.0.1"
   },
   "devDependencies": {
-    "eslint": "^8.43.0"
+    "eslint": "^8.44.0"
   }
 }
