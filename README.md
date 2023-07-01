@@ -1,5 +1,5 @@
 <br>
-<div class="badges" style="text-align: center;">
+<div class="badges" align="center">
 
 # Community Helper
 
