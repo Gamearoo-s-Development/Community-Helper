@@ -10,22 +10,39 @@ export default {
 
 		switch (interaction.commandName) {
 		case "todo":
-			// fetch list of taskIds from the database and filter by the input
-
 			dbFindMany("tasks", {guildId: interaction.guild.id}).then(result => {
 				const filteredTasks = result.filter(task => task.taskId.toString().includes(input));
 
-				interaction.respond(filteredTasks.map(task => ({
-						name: `${task.taskId} - ${task.task}`, value: task.taskId
-					})
+				return interaction.respond(filteredTasks.map(task => ({
+					name: `${task.taskId} - ${task.task}`, value: task.taskId
+				})
 				)).catch((error) => {
-					console.warn(
+					return console.warn(
 						bold(red("[ ERR ] ▪ ")) +
 						white(`Executing "${interaction.commandName}": `) +
 						red(error)
 					);
 				});
 			});
+			break;
+		case "reject":
+			switch (interaction.options.getSubcommand()) {
+			case "suggestion":
+				dbFindMany("suggestions", {guildId: interaction.guild.id}).then(result => {
+					const filteredSuggestions = result.filter(suggestion => suggestion.timestamp.toString().includes(input));
+
+					return interaction.respond(filteredSuggestions.map(suggestion => ({
+						name: `${suggestion.timestamp} - ${suggestion.suggestion}`, value: suggestion.timestamp
+					})
+					)).catch((error) => {
+						return console.warn(
+							bold(red("[ ERR ] ▪ ")) +
+							white(`Executing "${interaction.commandName}": `) +
+							red(error)
+						);
+					});
+				});
+			}
 		}
 	}
 };

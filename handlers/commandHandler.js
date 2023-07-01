@@ -112,6 +112,9 @@ async function onInteraction(client) {
 						}
 					]
 				}], ephemeral: true
+			}).catch(() => {
+				console.warn(bold(red("[ ERR ] ▪ ")) + whiteBright(`Error Executing "${commandName}": `));
+				console.warn(red(error));
 			});
 		}
 	});
