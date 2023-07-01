@@ -94,7 +94,7 @@ async function onInteraction(client) {
 			await command.execute({args, channel, client, guild, interaction, member, user});
 		} catch (error) {
 			console.warn(bold(red("[ ERR ] ▪ ")) + whiteBright(`Error Executing "${commandName}": `));
-			console.warn(red(error));
+			console.warn(error);
 
 			await interaction.reply({
 				embeds: [{
